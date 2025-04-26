@@ -26,6 +26,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+ // flake8 noqa
+
 #include <modmesh/simd/simd_support.hpp>
 
 #if defined(__linux__) || defined(__ANDROID__)

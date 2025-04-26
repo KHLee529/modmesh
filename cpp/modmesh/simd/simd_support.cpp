@@ -85,50 +85,85 @@ SIMDFeature detectSIMD(void)
     {
         __cpuid(info, 1);
         if (info[3] & (1 << 25))
+        {
             return SIMD_SSE;
+        }
         if (info[3] & (1 << 26))
+        {
             return SIMD_SSE2;
+        }
         if (info[2] & (1 << 0))
+        {
             return SIMD_SSE3;
+        }
         if (info[2] & (1 << 9))
+        {
             return SIMD_SSSE3;
+        }
         if (info[2] & (1 << 19))
+        {
             return SIMD_SSE41;
+        }
         if (info[2] & (1 << 20))
+        {
             return SIMD_SSE42;
+        }
         if (info[2] & (1 << 28))
+        {
             return SIMD_AVX;
+        }
     }
 
     if (nIds >= 7)
     {
         __cpuidex(info, 7, 0);
         if (info[1] & (1 << 5))
+        {
             return SIMD_AVX2;
+        }
         if (info[1] & (1 << 16))
+        {
             return SIMD_AVX512;
+        }
     }
 #elif defined(__GNUC__) || defined(__clang__)
-    unsigned int eax, ebx, ecx, edx;
+    unsigned int eax = 0;
+    unsigned int ebx = 0;
+    unsigned int ecx = 0;
+    unsigned int edx = 0;
     __asm__ __volatile__(
         "cpuid"
         : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
         : "a"(1));
 
     if (edx & (1 << 25))
+    {
         return SIMD_SSE;
+    }
     if (edx & (1 << 26))
+    {
         return SIMD_SSE2;
+    }
     if (ecx & (1 << 0))
+    {
         return SIMD_SSE3;
+    }
     if (ecx & (1 << 9))
+    {
         return SIMD_SSSE3;
+    }
     if (ecx & (1 << 19))
+    {
         return SIMD_SSE41;
+    }
     if (ecx & (1 << 20))
+    {
         return SIMD_SSE42;
+    }
     if (ecx & (1 << 28))
+    {
         return SIMD_AVX;
+    }
 
     // For AVX2/AVX512, CPUID with eax=7
     __asm__ __volatile__(
@@ -136,9 +171,13 @@ SIMDFeature detectSIMD(void)
         : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
         : "a"(7), "c"(0));
     if (ebx & (1 << 5))
+    {
         return SIMD_AVX2;
+    }
     if (ebx & (1 << 16))
+    {
         return SIMD_AVX512;
+    }
 #endif
 #endif
 

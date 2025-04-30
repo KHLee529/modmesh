@@ -207,6 +207,62 @@ public:
         }
         return ret;
     }
+
+    A add(A const & other)
+    {
+        auto athis = static_cast<A const *>(this);
+        A ret(*athis);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < athis->size(); ++i)
+            {
+                ret.data(i) = athis->data(i) + other.data(i);
+            }
+        }
+        return ret;
+    }
+
+    A substract(A const & other)
+    {
+        auto athis = static_cast<A const *>(this);
+        A ret(*athis);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < athis->size(); ++i)
+            {
+                ret.data(i) = athis->data(i) - other.data(i);
+            }
+        }
+        return ret;
+    }
+
+    A multiply(A const & other)
+    {
+        auto athis = static_cast<A const *>(this);
+        A ret(*athis);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < athis->size(); ++i)
+            {
+                ret.data(i) = athis->data(i) * other.data(i);
+            }
+        }
+        return ret;
+    }
+
+    A divide(A const & other)
+    {
+        auto athis = static_cast<A const *>(this);
+        A ret(*athis);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < athis->size(); ++i)
+            {
+                ret.data(i) = athis->data(i) / other.data(i);
+            }
+        }
+        return ret;
+    }
 }; /* end class SimpleArrayMixinCalculators */
 
 template <typename A, typename T>

@@ -55,6 +55,27 @@ const T * check_between(T const * start, T const * end, T const & min_val, T con
     }
 }
 
+#define DECL_MM_ARITHMETIC_OP(FuncName)                                         \
+    template <typename T>                                                       \
+    void FuncName(T * dest, T const * dest_end, T const * src1, T const * src2) \
+    {                                                                           \
+        using namespace detail;                                                 \
+        switch (detect_simd())                                                  \
+        {                                                                       \
+        case SIMD_NEON:                                                         \
+            return neon::FuncName<T>(dest, dest_end, src1, src2);               \
+            break;                                                              \
+                                                                                \
+        default:                                                                \
+            return generic::FuncName<T>(dest, dest_end, src1, src2);            \
+        }                                                                       \
+    }
+
+DECL_MM_ARITHMETIC_OP(add)
+DECL_MM_ARITHMETIC_OP(sub)
+DECL_MM_ARITHMETIC_OP(mul)
+
+#undef DECL_MM_ARITHMETIC_OP
 } /* namespace simd */
 
 } /* namespace modmesh */

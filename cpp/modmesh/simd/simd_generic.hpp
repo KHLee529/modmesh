@@ -53,6 +53,26 @@ const T * check_between(T const * start, T const * end, T const & min_val, T con
     return nullptr;
 }
 
+#define DECL_MM_GENERIC_ARITHMETIC_OP(FuncName, op)                             \
+    template <typename T>                                                       \
+    void FuncName(T * dest, T const * dest_end, T const * src1, T const * src2) \
+    {                                                                           \
+        T * ptr = dest;                                                         \
+        while (ptr < dest_end)                                                  \
+        {                                                                       \
+            *ptr = *src1 op * src2;                                             \
+            ++ptr;                                                              \
+            ++src1;                                                             \
+            ++src2;                                                             \
+        }                                                                       \
+    }
+
+DECL_MM_GENERIC_ARITHMETIC_OP(add, +)
+DECL_MM_GENERIC_ARITHMETIC_OP(sub, -)
+DECL_MM_GENERIC_ARITHMETIC_OP(mul, *)
+
+#undef DECL_MM_GENERIC_ARITHMETIC_OP
+
 } /* namespace generic */
 
 } /* namespace simd */

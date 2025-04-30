@@ -146,6 +146,62 @@ DECL_MM_IMPL_VCLTQ(32)
 DECL_MM_IMPL_VCLTQ(64)
 
 #undef DECL_MM_IMPL_VCLTQ
+
+#define DECL_MM_IMPL_VADDQ(N)                                                                                        \
+    template <>                                                                                                      \
+    type::vector_t<utype_t(N)> vaddq<utype_t(N)>(type::vector_t<utype_t(N)> vec_a, type::vector_t<utype_t(N)> vec_b) \
+    {                                                                                                                \
+        return vaddq_u##N(vec_a, vec_b);                                                                             \
+    }                                                                                                                \
+    template <>                                                                                                      \
+    type::vector_t<stype_t(N)> vaddq<stype_t(N)>(type::vector_t<stype_t(N)> vec_a, type::vector_t<stype_t(N)> vec_b) \
+    {                                                                                                                \
+        return vaddq_s##N(vec_a, vec_b);                                                                             \
+    }
+
+DECL_MM_IMPL_VADDQ(8)
+DECL_MM_IMPL_VADDQ(16)
+DECL_MM_IMPL_VADDQ(32)
+DECL_MM_IMPL_VADDQ(64)
+
+#undef DECL_MM_IMPL_VADDQ
+
+#define DECL_MM_IMPL_VSUBQ(N)                                                                                        \
+    template <>                                                                                                      \
+    type::vector_t<utype_t(N)> vsubq<utype_t(N)>(type::vector_t<utype_t(N)> vec_a, type::vector_t<utype_t(N)> vec_b) \
+    {                                                                                                                \
+        return vsubq_u##N(vec_a, vec_b);                                                                             \
+    }                                                                                                                \
+    template <>                                                                                                      \
+    type::vector_t<stype_t(N)> vsubq<stype_t(N)>(type::vector_t<stype_t(N)> vec_a, type::vector_t<stype_t(N)> vec_b) \
+    {                                                                                                                \
+        return vsubq_s##N(vec_a, vec_b);                                                                             \
+    }
+
+DECL_MM_IMPL_VSUBQ(8)
+DECL_MM_IMPL_VSUBQ(16)
+DECL_MM_IMPL_VSUBQ(32)
+DECL_MM_IMPL_VSUBQ(64)
+
+#undef DECL_MM_IMPL_VSUBQ
+
+#define DECL_MM_IMPL_VMULQ(N)                                                                                        \
+    template <>                                                                                                      \
+    type::vector_t<utype_t(N)> vmulq<utype_t(N)>(type::vector_t<utype_t(N)> vec_a, type::vector_t<utype_t(N)> vec_b) \
+    {                                                                                                                \
+        return vmulq_u##N(vec_a, vec_b);                                                                             \
+    }                                                                                                                \
+    template <>                                                                                                      \
+    type::vector_t<stype_t(N)> vmulq<stype_t(N)>(type::vector_t<stype_t(N)> vec_a, type::vector_t<stype_t(N)> vec_b) \
+    {                                                                                                                \
+        return vmulq_s##N(vec_a, vec_b);                                                                             \
+    }
+
+DECL_MM_IMPL_VMULQ(8)
+DECL_MM_IMPL_VMULQ(16)
+DECL_MM_IMPL_VMULQ(32)
+
+#undef DECL_MM_IMPL_VMULQ
 #undef stype_t
 #undef utype_t
 

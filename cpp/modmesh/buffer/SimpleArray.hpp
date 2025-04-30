@@ -316,6 +316,21 @@ public:
         return *athis;
     }
 
+#define DECL_MM_DECL_SIMD_ARITHMETIC_OP(FuncName)                                 \
+    A FuncName##_simd(A const & other)                                            \
+    {                                                                             \
+        auto athis = static_cast<A const *>(this);                                \
+        A ret(*athis);                                                            \
+        simd::FuncName<T>(ret.begin(), ret.end(), athis->begin(), other.begin()); \
+        return ret;                                                               \
+    }
+
+    DECL_MM_DECL_SIMD_ARITHMETIC_OP(add)
+    DECL_MM_DECL_SIMD_ARITHMETIC_OP(sub)
+    DECL_MM_DECL_SIMD_ARITHMETIC_OP(mul)
+
+#undef DECL_MM_DECL_SIMD_ARITHMETIC_OP
+
 }; /* end class SimpleArrayMixinCalculators */
 
 template <typename A, typename T>

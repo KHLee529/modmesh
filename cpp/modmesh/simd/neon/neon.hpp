@@ -105,12 +105,93 @@ OUT_OF_RANGE:
     }
     return ptr;
 }
+
+#define DECL_MM_IMPL_NEON_ARITHMETIC_OP(FuncName)                                       \
+    template <typename T, typename std::enable_if_t<!type::has_vectype<T>> * = nullptr> \
+    void FuncName(T * dest, T const * dest_end, T const * src1, T const * src2)         \
+    {                                                                                   \
+        generic::FuncName<T>(dest, dest_end, src1, src2);                               \
+    }                                                                                   \
+    template <typename T, typename std::enable_if_t<type::has_vectype<T>> * = nullptr>  \
+    void FuncName(T * dest, T const * dest_end, T const * src1, T const * src2)         \
+    {                                                                                   \
+        using vec_t = type::vector_t<T>;                                                \
+        constexpr size_t N_lane = type::vector_lane<T>;                                 \
+                                                                                        \
+        vec_t src1_vec;                                                                 \
+        vec_t src2_vec;                                                                 \
+        vec_t res_vec;                                                                  \
+                                                                                        \
+        T * ptr = dest;                                                                 \
+        for (; ptr <= dest_end - N_lane; ptr += N_lane, src1 += N_lane, src2 += N_lane) \
+        {                                                                               \
+            src1_vec = vld1q<T>(src1);                                                  \
+            src2_vec = vld1q<T>(src2);                                                  \
+            res_vec = v##FuncName##q<T>(src1_vec, src2_vec);                            \
+            vst1q<T>(ptr, res_vec);                                                     \
+        }                                                                               \
+                                                                                        \
+        if (ptr != dest_end)                                                            \
+        {                                                                               \
+            generic::FuncName<T>(ptr, dest_end, src1, src2);                            \
+        }                                                                               \
+    }
+
+DECL_MM_IMPL_NEON_ARITHMETIC_OP(add)
+DECL_MM_IMPL_NEON_ARITHMETIC_OP(sub)
+
+#undef DECL_MM_IMPL_NEON_ARITHMETIC_OP
+
+template <typename T, typename std::enable_if_t<2 >= type::vector_lane<T>> * = nullptr>
+void mul(T * dest, T const * dest_end, T const * src1, T const * src2)
+{
+    generic::mul<T>(dest, dest_end, src1, src2);
+}
+template <typename T, typename std::enable_if_t<2 < type::vector_lane<T>> * = nullptr>
+void mul(T * dest, T const * dest_end, T const * src1, T const * src2)
+{
+    using vec_t = type::vector_t<T>;
+    constexpr size_t N_lane = type::vector_lane<T>;
+
+    vec_t src1_vec;
+    vec_t src2_vec;
+    vec_t res_vec;
+
+    T * ptr = dest;
+    for (; ptr <= dest_end - N_lane; ptr += N_lane, src1 += N_lane, src2 += N_lane)
+    {
+        src1_vec = vld1q<T>(src1);
+        src2_vec = vld1q<T>(src2);
+        res_vec = vmulq<T>(src1_vec, src2_vec);
+        vst1q<T>(ptr, res_vec);
+    }
+
+    if (ptr != dest_end)
+    {
+        generic::mul<T>(ptr, dest_end, src1, src2);
+    }
+}
+
 #else
 template <typename T>
 const T * check_between(T const * start, T const * end, T const & min_val, T const & max_val)
 {
     return generic::check_between<T>(start, end, min_val, max_val);
 }
+
+#define DECL_MM_IMPL_NEON_ARITHMETIC_OP(FuncName)                               \
+    template <typename T>                                                       \
+    void FuncName(T * dest, T const * dest_end, T const * src1, T const * src2) \
+    {                                                                           \
+        generic::FuncName<T>(dest, dest_end, src1, src2);                       \
+    }
+
+DECL_MM_IMPL_NEON_ARITHMETIC_OP(add)
+DECL_MM_IMPL_NEON_ARITHMETIC_OP(sub)
+DECL_MM_IMPL_NEON_ARITHMETIC_OP(mul)
+
+#undef DECL_MM_IMPL_NEON_ARITHMETIC_OP
+
 #endif /* defined(__aarch64__) */
 
 } /* namespace neon */

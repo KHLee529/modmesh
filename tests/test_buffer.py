@@ -998,6 +998,72 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         sarr = sarr.abs()
         self.assertEqual(sarr.sum(), True)
 
+    def test_add(self):
+        arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        arr2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+        res = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30]
+        narr1 = np.array(arr1, dtype='int64')
+        narr2 = np.array(arr2, dtype='int64')
+        sarr1 = modmesh.SimpleArrayInt64(array=narr1)
+        sarr2 = modmesh.SimpleArrayInt64(array=narr2)
+        nres = narr1 + narr2
+        sres = sarr1 + sarr2
+        for i in range(len(res)):
+            self.assertEqual(sres[i], res[i])
+            self.assertEqual(sres[i], nres[i])
+
+    def test_sub(self):
+        arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        arr2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+        narr1 = np.array(arr1, dtype='int64')
+        narr2 = np.array(arr2, dtype='int64')
+        sarr1 = modmesh.SimpleArrayInt64(array=narr1)
+        sarr2 = modmesh.SimpleArrayInt64(array=narr2)
+        nres = narr2 - narr1
+        sres = sarr2 - sarr1
+        for i in range(len(arr1)):
+            self.assertEqual(sres[i], arr1[i])
+            self.assertEqual(sres[i], nres[i])
+
+    def test_mul(self):
+        arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        arr2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+        res = [2, 8, 18, 32, 50, 72, 98, 128, 162, 200]
+        narr1 = np.array(arr1, dtype='int64')
+        narr2 = np.array(arr2, dtype='int64')
+        sarr1 = modmesh.SimpleArrayInt64(array=narr1)
+        sarr2 = modmesh.SimpleArrayInt64(array=narr2)
+        nres = narr1 * narr2
+        sres = sarr1 * sarr2
+        for i in range(len(res)):
+            self.assertEqual(sres[i], res[i])
+            self.assertEqual(sres[i], nres[i])
+
+    def test_div(self):
+        arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        arr2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+        res = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        narr1 = np.array(arr1, dtype='int64')
+        narr2 = np.array(arr2, dtype='int64')
+        sarr1 = modmesh.SimpleArrayInt64(array=narr1)
+        sarr2 = modmesh.SimpleArrayInt64(array=narr2)
+        nres = narr2 // narr1
+        sres = sarr2 // sarr1
+        for i in range(len(res)):
+            self.assertEqual(sres[i], res[i])
+            self.assertEqual(sres[i], nres[i])
+
+        res = [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+        narr1 = np.array(arr1, dtype='float64') / 5
+        narr2 = np.array(arr2, dtype='float64') / 2
+        sarr1 = modmesh.SimpleArrayFloat64(array=narr1)
+        sarr2 = modmesh.SimpleArrayFloat64(array=narr2)
+        nres = narr2 / narr1
+        sres = sarr2 / sarr1
+        for i in range(len(res)):
+            self.assertEqual(sres[i], res[i])
+            self.assertEqual(sres[i], nres[i])
+
 
 class SimpleArraySearchTC(unittest.TestCase):
 

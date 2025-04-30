@@ -264,6 +264,58 @@ public:
         return ret;
     }
 
+    A & operator+=(A const & other)
+    {
+        auto athis = static_cast<A *>(this);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < athis->size(); ++i)
+            {
+                athis->data(i) += other.data(i);
+            }
+        }
+        return *athis;
+    }
+
+    A & operator-=(A const & other)
+    {
+        auto athis = static_cast<A *>(this);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < athis->size(); ++i)
+            {
+                athis->data(i) -= other.data(i);
+            }
+        }
+        return *athis;
+    }
+
+    A & operator*=(A const & other)
+    {
+        auto athis = static_cast<A *>(this);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < athis->size(); ++i)
+            {
+                athis->data(i) *= other.data(i);
+            }
+        }
+        return *athis;
+    }
+
+    A & operator/=(A const & other)
+    {
+        auto athis = static_cast<A *>(this);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < athis->size(); ++i)
+            {
+                athis->data(i) /= other.data(i);
+            }
+        }
+        return *athis;
+    }
+
 }; /* end class SimpleArrayMixinCalculators */
 
 template <typename A, typename T>

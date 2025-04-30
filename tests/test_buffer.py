@@ -1008,8 +1008,10 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         sarr2 = modmesh.SimpleArrayInt64(array=narr2)
         nres = narr1 + narr2
         sres = sarr1 + sarr2
+        simdres = sarr1.add_simd(sarr2)
         for i in range(len(res)):
             self.assertEqual(sres[i], res[i])
+            self.assertEqual(simdres[i], res[i])
             self.assertEqual(sres[i], nres[i])
 
     def test_sub(self):
@@ -1021,8 +1023,10 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         sarr2 = modmesh.SimpleArrayInt64(array=narr2)
         nres = narr2 - narr1
         sres = sarr2 - sarr1
+        simdres = sarr2.sub_simd(sarr1)
         for i in range(len(arr1)):
             self.assertEqual(sres[i], arr1[i])
+            self.assertEqual(simdres[i], arr1[i])
             self.assertEqual(sres[i], nres[i])
 
     def test_mul(self):
@@ -1035,8 +1039,10 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         sarr2 = modmesh.SimpleArrayInt64(array=narr2)
         nres = narr1 * narr2
         sres = sarr1 * sarr2
+        simdres = sarr1.mul_simd(sarr2)
         for i in range(len(res)):
             self.assertEqual(sres[i], res[i])
+            self.assertEqual(simdres[i], res[i])
             self.assertEqual(sres[i], nres[i])
 
     def test_div(self):

@@ -212,19 +212,19 @@ class MODMESH_PYTHON_WRAPPER_VISIBILITY WrapSimpleArray
             .def("max", &wrapped_type::max)
             .def("sum", &wrapped_type::sum)
             .def("abs", &wrapped_type::abs)
-            .def("__add__", &wrapped_type::add)
-            .def("__sub__", &wrapped_type::substract)
-            .def("__mul__", &wrapped_type::multiply)
+            .def("__add__", &wrapped_type::operator+)
+            .def("__sub__", &wrapped_type::operator-)
+            .def("__mul__", &wrapped_type::operator*)
             //
             ;
 
         if constexpr (std::is_integral_v<T>)
         {
-            (*this).def("__floordiv__", &wrapped_type::divide);
+            (*this).def("__floordiv__", &wrapped_type::operator/);
         }
         else if constexpr (std::is_floating_point_v<T>)
         {
-            (*this).def("__truediv__", &wrapped_type::divide);
+            (*this).def("__truediv__", &wrapped_type::operator/);
         }
 
         return *this;

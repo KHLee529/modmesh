@@ -208,7 +208,7 @@ public:
         return ret;
     }
 
-    A add(A const & other)
+    A operator+(A const & other)
     {
         auto athis = static_cast<A const *>(this);
         A ret(*athis);
@@ -222,7 +222,7 @@ public:
         return ret;
     }
 
-    A substract(A const & other)
+    A operator-(A const & other)
     {
         auto athis = static_cast<A const *>(this);
         A ret(*athis);
@@ -236,7 +236,7 @@ public:
         return ret;
     }
 
-    A multiply(A const & other)
+    A operator*(A const & other)
     {
         auto athis = static_cast<A const *>(this);
         A ret(*athis);
@@ -250,7 +250,7 @@ public:
         return ret;
     }
 
-    A divide(A const & other)
+    A operator/(A const & other)
     {
         auto athis = static_cast<A const *>(this);
         A ret(*athis);
@@ -263,6 +263,7 @@ public:
         }
         return ret;
     }
+
 }; /* end class SimpleArrayMixinCalculators */
 
 template <typename A, typename T>

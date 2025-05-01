@@ -106,13 +106,13 @@ OUT_OF_RANGE:
     return ptr;
 }
 
-#define DECL_MM_IMPL_NEON_ARITHMETIC_OP(FuncName, enable_cond)                              \
+#define DECL_MM_IMPL_NEON_ARITHMETIC_OP(FUNCNAME, ENABLECOND)                               \
     template <typename T>                                                                   \
-    void FuncName(T * dest, T const * dest_end, T const * src1, T const * src2)             \
+    void FUNCNAME(T * dest, T const * dest_end, T const * src1, T const * src2)             \
     {                                                                                       \
-        if constexpr (!(enable_cond))                                                       \
+        if constexpr (!(ENABLECOND))                                                        \
         {                                                                                   \
-            return generic::FuncName<T>(dest, dest_end, src1, src2);                        \
+            return generic::FUNCNAME<T>(dest, dest_end, src1, src2);                        \
         }                                                                                   \
         else                                                                                \
         {                                                                                   \
@@ -128,13 +128,13 @@ OUT_OF_RANGE:
             {                                                                               \
                 src1_vec = vld1q<T>(src1);                                                  \
                 src2_vec = vld1q<T>(src2);                                                  \
-                res_vec = v##FuncName##q<T>(src1_vec, src2_vec);                            \
+                res_vec = v##FUNCNAME##q<T>(src1_vec, src2_vec);                            \
                 vst1q<T>(ptr, res_vec);                                                     \
             }                                                                               \
                                                                                             \
             if (ptr != dest_end)                                                            \
             {                                                                               \
-                generic::FuncName<T>(ptr, dest_end, src1, src2);                            \
+                generic::FUNCNAME<T>(ptr, dest_end, src1, src2);                            \
             }                                                                               \
         }                                                                                   \
     }
@@ -152,11 +152,11 @@ const T * check_between(T const * start, T const * end, T const & min_val, T con
     return generic::check_between<T>(start, end, min_val, max_val);
 }
 
-#define DECL_MM_IMPL_NEON_ARITHMETIC_OP(FuncName)                               \
+#define DECL_MM_IMPL_NEON_ARITHMETIC_OP(FUNCNAME)                               \
     template <typename T>                                                       \
-    void FuncName(T * dest, T const * dest_end, T const * src1, T const * src2) \
+    void FUNCNAME(T * dest, T const * dest_end, T const * src1, T const * src2) \
     {                                                                           \
-        generic::FuncName<T>(dest, dest_end, src1, src2);                       \
+        generic::FUNCNAME<T>(dest, dest_end, src1, src2);                       \
     }
 
 DECL_MM_IMPL_NEON_ARITHMETIC_OP(add)

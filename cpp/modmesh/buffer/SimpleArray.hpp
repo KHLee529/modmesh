@@ -208,113 +208,49 @@ public:
         return ret;
     }
 
-    A operator+(A const & other)
-    {
-        auto athis = static_cast<A const *>(this);
-        A ret(*athis);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < athis->size(); ++i)
-            {
-                ret.data(i) = athis->data(i) + other.data(i);
-            }
-        }
-        return ret;
+#define DECL_MM_IMPL_ARITH_OP_OVERLOAD(op)                                    \
+    A operator op(A const & other)                                            \
+    {                                                                         \
+        auto athis = static_cast<A const *>(this);                            \
+        A ret(*athis);                                                        \
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>) \
+        {                                                                     \
+            for (size_t i = 0; i < athis->size(); ++i)                        \
+            {                                                                 \
+                ret.data(i) = athis->data(i) op other.data(i);                \
+            }                                                                 \
+        }                                                                     \
+        return ret;                                                           \
     }
 
-    A operator-(A const & other)
-    {
-        auto athis = static_cast<A const *>(this);
-        A ret(*athis);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < athis->size(); ++i)
-            {
-                ret.data(i) = athis->data(i) - other.data(i);
-            }
-        }
-        return ret;
+    DECL_MM_IMPL_ARITH_OP_OVERLOAD(+)
+    DECL_MM_IMPL_ARITH_OP_OVERLOAD(-)
+    DECL_MM_IMPL_ARITH_OP_OVERLOAD(*)
+    DECL_MM_IMPL_ARITH_OP_OVERLOAD(/)
+
+#undef DECL_MM_IMPL_ARITH_OP_OVERLOAD
+
+#define DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD(op)                             \
+    A operator op(A const & other)                                            \
+    {                                                                         \
+        auto athis = static_cast<A *>(this);                                  \
+        A ret(*athis);                                                        \
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>) \
+        {                                                                     \
+            for (size_t i = 0; i < athis->size(); ++i)                        \
+            {                                                                 \
+                athis->data(i) op other.data(i);                              \
+            }                                                                 \
+        }                                                                     \
+        return ret;                                                           \
     }
 
-    A operator*(A const & other)
-    {
-        auto athis = static_cast<A const *>(this);
-        A ret(*athis);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < athis->size(); ++i)
-            {
-                ret.data(i) = athis->data(i) * other.data(i);
-            }
-        }
-        return ret;
-    }
+    DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD(+=)
+    DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD(-=)
+    DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD(*=)
+    DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD(/=)
 
-    A operator/(A const & other)
-    {
-        auto athis = static_cast<A const *>(this);
-        A ret(*athis);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < athis->size(); ++i)
-            {
-                ret.data(i) = athis->data(i) / other.data(i);
-            }
-        }
-        return ret;
-    }
-
-    A & operator+=(A const & other)
-    {
-        auto athis = static_cast<A *>(this);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < athis->size(); ++i)
-            {
-                athis->data(i) += other.data(i);
-            }
-        }
-        return *athis;
-    }
-
-    A & operator-=(A const & other)
-    {
-        auto athis = static_cast<A *>(this);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < athis->size(); ++i)
-            {
-                athis->data(i) -= other.data(i);
-            }
-        }
-        return *athis;
-    }
-
-    A & operator*=(A const & other)
-    {
-        auto athis = static_cast<A *>(this);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < athis->size(); ++i)
-            {
-                athis->data(i) *= other.data(i);
-            }
-        }
-        return *athis;
-    }
-
-    A & operator/=(A const & other)
-    {
-        auto athis = static_cast<A *>(this);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < athis->size(); ++i)
-            {
-                athis->data(i) /= other.data(i);
-            }
-        }
-        return *athis;
-    }
+#undef DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD
 
 #define DECL_MM_DECL_SIMD_ARITHMETIC_OP(FuncName)                                 \
     A FuncName##_simd(A const & other)                                            \

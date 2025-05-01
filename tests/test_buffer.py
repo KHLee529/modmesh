@@ -1054,8 +1054,8 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         sarr2 = modmesh.SimpleArrayBool(array=narr2)
         with self.assertRaisesRegex(
             RuntimeError,
-            r"SimpleArray<bool>::operator-\(\): "
-            r"boolean value doesn't support this operator"
+            r"SimpleArray<bool>::subtract\(\): "
+            r"boolean value doesn't support this operation"
         ):
             sres = sarr2 - sarr1
 

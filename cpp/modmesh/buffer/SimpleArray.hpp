@@ -208,78 +208,78 @@ public:
         return ret;
     }
 
-#define DECL_MM_IMPL_ARITH_OP_OVERLOAD(op, is_bool_support, bool_op)                                                                      \
-    A operator op(A const & other) const                                                                                                  \
-    {                                                                                                                                     \
-        auto athis = static_cast<A const *>(this);                                                                                        \
-        A ret(*athis);                                                                                                                    \
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)                                                             \
-        {                                                                                                                                 \
-            for (size_t i = 0; i < athis->size(); ++i)                                                                                    \
-            {                                                                                                                             \
-                ret.data(i) = athis->data(i) op other.data(i);                                                                            \
-            }                                                                                                                             \
-        }                                                                                                                                 \
-        else if constexpr (is_bool_support)                                                                                               \
-        {                                                                                                                                 \
-            for (size_t i = 0; i < athis->size(); ++i)                                                                                    \
-            {                                                                                                                             \
-                ret.data(i) = athis->data(i) bool_op other.data(i);                                                                       \
-            }                                                                                                                             \
-        }                                                                                                                                 \
-        else                                                                                                                              \
-        {                                                                                                                                 \
-            throw std::runtime_error(Formatter() << "SimpleArray<bool>::operator" #op "(): boolean value doesn't support this operator"); \
-        }                                                                                                                                 \
-        return ret;                                                                                                                       \
+#define DECL_MM_IMPL_ARITHMETIC_OPERATION(FuncName, op, is_bool_support, bool_op)                                                        \
+    static A FuncName(A const & lhs, A const & rhs)                                                                                      \
+    {                                                                                                                                    \
+        A ret(lhs);                                                                                                                      \
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)                                                            \
+        {                                                                                                                                \
+            for (size_t i = 0; i < lhs.size(); ++i)                                                                                      \
+            {                                                                                                                            \
+                ret.data(i) = lhs.data(i) op rhs.data(i);                                                                                \
+            }                                                                                                                            \
+        }                                                                                                                                \
+        else if constexpr (is_bool_support)                                                                                              \
+        {                                                                                                                                \
+            for (size_t i = 0; i < lhs.size(); ++i)                                                                                      \
+            {                                                                                                                            \
+                ret.data(i) = lhs.data(i) bool_op rhs.data(i);                                                                           \
+            }                                                                                                                            \
+        }                                                                                                                                \
+        else                                                                                                                             \
+        {                                                                                                                                \
+            throw std::runtime_error(Formatter() << "SimpleArray<bool>::" #FuncName "(): boolean value doesn't support this operation"); \
+        }                                                                                                                                \
+        return ret;                                                                                                                      \
+    }                                                                                                                                    \
+    A operator op(A const & other) const                                                                                                 \
+    {                                                                                                                                    \
+        auto athis = static_cast<A const *>(this);                                                                                       \
+        return FuncName(*athis, other);                                                                                                  \
     }
 
-    DECL_MM_IMPL_ARITH_OP_OVERLOAD(+, true, ||)
-    DECL_MM_IMPL_ARITH_OP_OVERLOAD(-, false, -)
-    DECL_MM_IMPL_ARITH_OP_OVERLOAD(*, true, &&)
-    DECL_MM_IMPL_ARITH_OP_OVERLOAD(/, false, /)
+    DECL_MM_IMPL_ARITHMETIC_OPERATION(add, +, true, ||)
+    DECL_MM_IMPL_ARITHMETIC_OPERATION(subtract, -, false, -)
+    DECL_MM_IMPL_ARITHMETIC_OPERATION(multiply, *, true, &&)
+    DECL_MM_IMPL_ARITHMETIC_OPERATION(divide, /, false, /)
 
-#undef DECL_MM_IMPL_ARITH_OP_OVERLOAD
+#undef DECL_MM_IMPL_ARITHMETIC_OPERATION
 
-#define DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD(op, is_bool_support, bool_op)                                                               \
-    A & operator op(A const & other)                                                                                                      \
-    {                                                                                                                                     \
-        auto athis = static_cast<A *>(this);                                                                                              \
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)                                                             \
-        {                                                                                                                                 \
-            for (size_t i = 0; i < athis->size(); ++i)                                                                                    \
-            {                                                                                                                             \
-                athis->data(i) op other.data(i);                                                                                          \
-            }                                                                                                                             \
-        }                                                                                                                                 \
-        else if constexpr (is_bool_support)                                                                                               \
-        {                                                                                                                                 \
-            for (size_t i = 0; i < athis->size(); ++i)                                                                                    \
-            {                                                                                                                             \
-                athis->data(i) = athis->data(i) bool_op other.data(i);                                                                    \
-            }                                                                                                                             \
-        }                                                                                                                                 \
-        else                                                                                                                              \
-        {                                                                                                                                 \
-            throw std::runtime_error(Formatter() << "SimpleArray<bool>::operator" #op "(): boolean value doesn't support this operator"); \
-        }                                                                                                                                 \
-        return (*athis);                                                                                                                  \
+#define DECL_MM_IMPL_ARITH_ASSIGN_OPERATION(FuncName, op, is_bool_support, bool_op)                                                        \
+    static A & FuncName##_assign(A & lhs, A const & rhs)                                                                                   \
+    {                                                                                                                                      \
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)                                                              \
+        {                                                                                                                                  \
+            for (size_t i = 0; i < lhs.size(); ++i)                                                                                        \
+            {                                                                                                                              \
+                lhs.data(i) op rhs.data(i);                                                                                                \
+            }                                                                                                                              \
+        }                                                                                                                                  \
+        else if constexpr (is_bool_support)                                                                                                \
+        {                                                                                                                                  \
+            for (size_t i = 0; i < lhs.size(); ++i)                                                                                        \
+            {                                                                                                                              \
+                lhs.data(i) = lhs.data(i) bool_op rhs.data(i);                                                                             \
+            }                                                                                                                              \
+        }                                                                                                                                  \
+        else                                                                                                                               \
+        {                                                                                                                                  \
+            throw std::runtime_error(Formatter() << "SimpleArray<bool>::" #FuncName "_assign(): boolean value doesn't support operation"); \
+        }                                                                                                                                  \
+        return lhs;                                                                                                                        \
+    }                                                                                                                                      \
+    A & operator op(A const & other)                                                                                                       \
+    {                                                                                                                                      \
+        auto athis = static_cast<A *>(this);                                                                                               \
+        return FuncName##_assign(*athis, other);                                                                                           \
     }
 
-    DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD(+=, true, ||)
-    DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD(-=, false, -=)
-    DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD(*=, true, &&)
-    DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD(/=, false, /=)
+    DECL_MM_IMPL_ARITH_ASSIGN_OPERATION(add, +=, true, ||)
+    DECL_MM_IMPL_ARITH_ASSIGN_OPERATION(subtract, -=, false, -=)
+    DECL_MM_IMPL_ARITH_ASSIGN_OPERATION(multiply, *=, true, &&)
+    DECL_MM_IMPL_ARITH_ASSIGN_OPERATION(divide, /=, false, /=)
 
-#undef DECL_MM_IMPL_ARITH_ASSIGN_OP_OVERLOAD
-
-#define DECL_MM_IMPL_STATIC_ARITH_OP(FuncName, op) \
-    static A FuncName(A const & lhs, A const & rhs) { return lhs op rhs; }
-
-    DECL_MM_IMPL_STATIC_ARITH_OP(add, +)
-    DECL_MM_IMPL_STATIC_ARITH_OP(subtract, -)
-    DECL_MM_IMPL_STATIC_ARITH_OP(multiply, *)
-    DECL_MM_IMPL_STATIC_ARITH_OP(divide, /)
+#undef DECL_MM_IMPL_ARITH_ASSIGN_OPERATION
 
 #undef DECL_MM_IMPL_STATIC_ARITH_OP
 

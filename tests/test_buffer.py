@@ -1008,6 +1008,8 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
             'uint16': modmesh.SimpleArrayUint16,
             'uint32': modmesh.SimpleArrayUint32,
             'uint64': modmesh.SimpleArrayUint64,
+            'float32': modmesh.SimpleArrayFloat32,
+            'float64': modmesh.SimpleArrayFloat64,
         }[dtype]
 
     def test_add(self):
@@ -1036,6 +1038,8 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         test_add_type('uint16')
         test_add_type('uint32')
         test_add_type('uint64')
+        test_add_type('float32')
+        test_add_type('float64')
 
         # test boolean
         arr1 = [True, True, True, False, False, False]
@@ -1076,6 +1080,8 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         test_sub_type('uint16')
         test_sub_type('uint32')
         test_sub_type('uint64')
+        test_sub_type('float32')
+        test_sub_type('float64')
 
         # test boolean
         arr1 = [True, True, True, False, False, False]
@@ -1115,6 +1121,8 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         test_mul_type('uint16')
         test_mul_type('uint32')
         test_mul_type('uint64')
+        test_mul_type('float32')
+        test_mul_type('float64')
 
         # test boolean
         arr1 = [True, True, True, False, False, False]

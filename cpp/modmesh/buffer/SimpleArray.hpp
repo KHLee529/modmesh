@@ -209,7 +209,7 @@ public:
     }
 
 #define DECL_MM_IMPL_ARITH_OP_OVERLOAD(op)                                    \
-    A operator op(A const & other)                                            \
+    A operator op(A const & other) const                                      \
     {                                                                         \
         auto athis = static_cast<A const *>(this);                            \
         A ret(*athis);                                                        \

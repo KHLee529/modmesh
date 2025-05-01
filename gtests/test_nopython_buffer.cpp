@@ -75,7 +75,7 @@ TEST(SimpleArray, abs)
     EXPECT_EQ(brr.sum(), 10.0);
 }
 
-TEST(SimpleArray, arithmetic)
+TEST(SimpleArray, arithmetic_num)
 {
     using namespace modmesh;
 
@@ -126,6 +126,46 @@ TEST(SimpleArray, arithmetic)
         {
             EXPECT_EQ(dst.data(i), div_res[i]);
         }
+    }
+
+#undef dst_init
+#undef src_init
+}
+
+TEST(SimpleArray, arithmetic_bool)
+{
+    using namespace modmesh;
+
+#define dst_init {true, true, true, false, false, false}
+#define src_init {true, false, true, false, true, false}
+
+    bool add_res[] = {true, true, true, false, true, false};
+    bool mul_res[] = {true, false, true, false, false, false};
+
+    {
+        SimpleArray<bool> src(src_init);
+        SimpleArray<bool> dst(dst_init);
+        dst += src;
+
+        for (int i = 0; i < dst.size(); i++)
+        {
+            EXPECT_EQ(dst.data(i), add_res[i]);
+        }
+    }
+    {
+        SimpleArray<bool> src(src_init);
+        SimpleArray<bool> dst(dst_init);
+        dst *= src;
+
+        for (int i = 0; i < dst.size(); i++)
+        {
+            EXPECT_EQ(dst.data(i), mul_res[i]);
+        }
+    }
+    {
+        SimpleArray<bool> src(src_init);
+        SimpleArray<bool> dst(dst_init);
+        EXPECT_THROW({ dst -= src; }, std::runtime_error);
     }
 
 #undef dst_init

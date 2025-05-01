@@ -998,22 +998,44 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         sarr = sarr.abs()
         self.assertEqual(sarr.sum(), True)
 
+    def type_convertor(self, dtype):
+        return {
+            'int8': modmesh.SimpleArrayInt8,
+            'int16': modmesh.SimpleArrayInt16,
+            'int32': modmesh.SimpleArrayInt32,
+            'int64': modmesh.SimpleArrayInt64,
+            'uint8': modmesh.SimpleArrayUint8,
+            'uint16': modmesh.SimpleArrayUint16,
+            'uint32': modmesh.SimpleArrayUint32,
+            'uint64': modmesh.SimpleArrayUint64,
+        }[dtype]
+
     def test_add(self):
         # test integer
-        arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        arr2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-        res = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30]
-        narr1 = np.array(arr1, dtype='int64')
-        narr2 = np.array(arr2, dtype='int64')
-        sarr1 = modmesh.SimpleArrayInt64(array=narr1)
-        sarr2 = modmesh.SimpleArrayInt64(array=narr2)
-        nres = narr1 + narr2
-        sres = sarr1 + sarr2
-        simdres = sarr1.add_simd(sarr2)
-        for i in range(len(res)):
-            self.assertEqual(sres[i], res[i])
-            self.assertEqual(simdres[i], res[i])
-            self.assertEqual(sres[i], nres[i])
+        def test_add_type(type):
+            arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            arr2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+            res = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30]
+            narr1 = np.array(arr1, dtype=type)
+            narr2 = np.array(arr2, dtype=type)
+            sarr1 = self.type_convertor(type)(array=narr1)
+            sarr2 = self.type_convertor(type)(array=narr2)
+            nres = narr1 + narr2
+            sres = sarr1 + sarr2
+            simdres = sarr1.add_simd(sarr2)
+            for i in range(len(res)):
+                self.assertEqual(sres[i], res[i])
+                self.assertEqual(simdres[i], res[i])
+                self.assertEqual(sres[i], nres[i])
+
+        test_add_type('int8')
+        test_add_type('int16')
+        test_add_type('int32')
+        test_add_type('int64')
+        test_add_type('uint8')
+        test_add_type('uint16')
+        test_add_type('uint32')
+        test_add_type('uint64')
 
         # test boolean
         arr1 = [True, True, True, False, False, False]
@@ -1031,19 +1053,29 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
 
     def test_sub(self):
         # test integer
-        arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        arr2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-        narr1 = np.array(arr1, dtype='int64')
-        narr2 = np.array(arr2, dtype='int64')
-        sarr1 = modmesh.SimpleArrayInt64(array=narr1)
-        sarr2 = modmesh.SimpleArrayInt64(array=narr2)
-        nres = narr2 - narr1
-        sres = sarr2 - sarr1
-        simdres = sarr2.sub_simd(sarr1)
-        for i in range(len(arr1)):
-            self.assertEqual(sres[i], arr1[i])
-            self.assertEqual(simdres[i], arr1[i])
-            self.assertEqual(sres[i], nres[i])
+        def test_sub_type(type):
+            arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            arr2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+            narr1 = np.array(arr1, dtype=type)
+            narr2 = np.array(arr2, dtype=type)
+            sarr1 = self.type_convertor(type)(array=narr1)
+            sarr2 = self.type_convertor(type)(array=narr2)
+            nres = narr2 - narr1
+            sres = sarr2 - sarr1
+            simdres = sarr2.sub_simd(sarr1)
+            for i in range(len(arr1)):
+                self.assertEqual(sres[i], arr1[i])
+                self.assertEqual(simdres[i], arr1[i])
+                self.assertEqual(sres[i], nres[i])
+
+        test_sub_type('int8')
+        test_sub_type('int16')
+        test_sub_type('int32')
+        test_sub_type('int64')
+        test_sub_type('uint8')
+        test_sub_type('uint16')
+        test_sub_type('uint32')
+        test_sub_type('uint64')
 
         # test boolean
         arr1 = [True, True, True, False, False, False]
@@ -1057,23 +1089,32 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
             r"SimpleArray<bool>::subtract\(\): "
             r"boolean value doesn't support this operation"
         ):
-            sres = sarr2 - sarr1
+            _ = sarr2 - sarr1
 
     def test_mul(self):
-        arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        arr2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-        res = [2, 8, 18, 32, 50, 72, 98, 128, 162, 200]
-        narr1 = np.array(arr1, dtype='int64')
-        narr2 = np.array(arr2, dtype='int64')
-        sarr1 = modmesh.SimpleArrayInt64(array=narr1)
-        sarr2 = modmesh.SimpleArrayInt64(array=narr2)
-        nres = narr1 * narr2
-        sres = sarr1 * sarr2
-        simdres = sarr1.mul_simd(sarr2)
-        for i in range(len(res)):
-            self.assertEqual(sres[i], res[i])
-            self.assertEqual(simdres[i], res[i])
-            self.assertEqual(sres[i], nres[i])
+        def test_mul_type(type):
+            arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            arr2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+            res = [2, 8, 18, 32, 50, 72, 98, 128, 162, 200]
+            narr1 = np.array(arr1, dtype=type)
+            narr2 = np.array(arr2, dtype=type)
+            sarr1 = self.type_convertor(type)(array=narr1)
+            sarr2 = self.type_convertor(type)(array=narr2)
+            nres = narr1 * narr2
+            sres = sarr1 * sarr2
+            simdres = sarr1.mul_simd(sarr2)
+            for i in range(len(res)):
+                self.assertEqual(sres[i], res[i])
+                self.assertEqual(simdres[i], res[i])
+                self.assertEqual(sres[i], nres[i])
+
+        test_mul_type('int16')
+        test_mul_type('int32')
+        test_mul_type('int64')
+        test_mul_type('uint8')
+        test_mul_type('uint16')
+        test_mul_type('uint32')
+        test_mul_type('uint64')
 
         # test boolean
         arr1 = [True, True, True, False, False, False]
@@ -1092,17 +1133,29 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
     def test_div(self):
         arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         arr2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-        res = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-        narr1 = np.array(arr1, dtype='int64')
-        narr2 = np.array(arr2, dtype='int64')
-        sarr1 = modmesh.SimpleArrayInt64(array=narr1)
-        sarr2 = modmesh.SimpleArrayInt64(array=narr2)
-        nres = narr2 // narr1
-        sres = sarr2 // sarr1
-        for i in range(len(res)):
-            self.assertEqual(sres[i], res[i])
-            self.assertEqual(sres[i], nres[i])
 
+        def test_div_type(type):
+            res = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            narr1 = np.array(arr1, dtype=type)
+            narr2 = np.array(arr2, dtype=type)
+            sarr1 = self.type_convertor(type)(array=narr1)
+            sarr2 = self.type_convertor(type)(array=narr2)
+            nres = narr2 // narr1
+            sres = sarr2 // sarr1
+            for i in range(len(res)):
+                self.assertEqual(sres[i], res[i])
+                self.assertEqual(sres[i], nres[i])
+
+        test_div_type('int8')
+        test_div_type('int16')
+        test_div_type('int32')
+        test_div_type('int64')
+        test_div_type('uint8')
+        test_div_type('uint16')
+        test_div_type('uint32')
+        test_div_type('uint64')
+
+        # test float
         res = [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
         narr1 = np.array(arr1, dtype='float64') / 5
         narr2 = np.array(arr2, dtype='float64') / 2
@@ -1123,7 +1176,7 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         sarr1 = modmesh.SimpleArrayBool(array=narr1)
         sarr2 = modmesh.SimpleArrayBool(array=narr2)
         with self.assertRaises(TypeError):
-            sres = sarr1 / sarr2
+            _ = sarr1 / sarr2
 
 
 class SimpleArraySearchTC(unittest.TestCase):

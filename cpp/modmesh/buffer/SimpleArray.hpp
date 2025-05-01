@@ -231,11 +231,6 @@ public:
             throw std::runtime_error(Formatter() << "SimpleArray<bool>::" #FUNCNAME "(): boolean value doesn't support this operation"); \
         }                                                                                                                                \
         return ret;                                                                                                                      \
-    }                                                                                                                                    \
-    A operator OP(A const & other) const                                                                                                 \
-    {                                                                                                                                    \
-        auto athis = static_cast<A const *>(this);                                                                                       \
-        return FUNCNAME(*athis, other);                                                                                                  \
     }
 
     DECL_MM_IMPL_ARITHMETIC_OPERATION(add, +, true, ||)
@@ -267,11 +262,6 @@ public:
             throw std::runtime_error(Formatter() << "SimpleArray<bool>::i" #FUNCNAME "(): boolean value doesn't support this operation"); \
         }                                                                                                                                 \
         return lhs;                                                                                                                       \
-    }                                                                                                                                      \
-    A & operator OP(A const & other)                                                                                                       \
-    {                                                                                                                                      \
-        auto athis = static_cast<A *>(this);                                                                                               \
-        return i##FUNCNAME(*athis, other);                                                                                                 \
     }
 
     DECL_MM_IMPL_ARITH_ASSIGN_OPERATION(add, +=, true, ||)

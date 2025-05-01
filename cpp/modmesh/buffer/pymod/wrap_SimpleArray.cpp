@@ -207,30 +207,30 @@ class MODMESH_PYTHON_WRAPPER_VISIBILITY WrapSimpleArray
     {
         namespace py = pybind11; // NOLINT(misc-unused-alias-decls)
 
+#define def_arithmetic(FUNCNAME) \
+    def(#FUNCNAME, [](wrapped_type & self, wrapped_type const & other) { return wrapped_type::FUNCNAME(self, other); })
+
         (*this)
             .def("min", &wrapped_type::min)
             .def("max", &wrapped_type::max)
             .def("sum", &wrapped_type::sum)
             .def("abs", &wrapped_type::abs)
-            .def("__add__", &wrapped_type::operator+)
-            .def("__sub__", &wrapped_type::operator-)
-            .def("__mul__", &wrapped_type::operator*)
+            .def_arithmetic(add)
+            .def_arithmetic(subtract)
+            .def_arithmetic(multiply)
+            .def_arithmetic(divide)
+            .def_arithmetic(iadd)
+            .def_arithmetic(isubtract)
+            .def_arithmetic(imultiply)
+            .def_arithmetic(idivide)
             .def("add_simd", &wrapped_type::add_simd)
             .def("sub_simd", &wrapped_type::sub_simd)
             .def("mul_simd", &wrapped_type::mul_simd)
             //
             ;
 
-        if constexpr (std::is_integral_v<T>)
-        {
-            (*this).def("__floordiv__", &wrapped_type::operator/);
-        }
-        else if constexpr (std::is_floating_point_v<T>)
-        {
-            (*this).def("__truediv__", &wrapped_type::operator/);
-        }
-
         return *this;
+#undef def_arithmetic
     }
 
     wrapper_type & wrap_sort()

@@ -1022,11 +1022,13 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
             narr2 = np.array(arr2, dtype=type)
             sarr1 = self.type_convertor(type)(array=narr1)
             sarr2 = self.type_convertor(type)(array=narr2)
-            nres = narr1 + narr2
-            sres = sarr1 + sarr2
+            nres = np.add(narr1, narr2)
+            sres = sarr1.add(sarr2)
             simdres = sarr1.add_simd(sarr2)
+            sarr1.iadd(sarr2)
             for i in range(len(res)):
                 self.assertEqual(sres[i], res[i])
+                self.assertEqual(sarr1[i], res[i])
                 self.assertEqual(simdres[i], res[i])
                 self.assertEqual(sres[i], nres[i])
 
@@ -1049,10 +1051,12 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         narr2 = np.array(arr2, dtype='bool')
         sarr1 = modmesh.SimpleArrayBool(array=narr1)
         sarr2 = modmesh.SimpleArrayBool(array=narr2)
-        nres = narr1 + narr2
-        sres = sarr1 + sarr2
+        nres = np.add(narr1, narr2)
+        sres = sarr1.add(sarr2)
+        sarr1.iadd(sarr2)
         for i in range(len(res)):
             self.assertEqual(sres[i], res[i])
+            self.assertEqual(sarr1[i], res[i])
             self.assertEqual(sres[i], nres[i])
 
     def test_sub(self):
@@ -1064,11 +1068,13 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
             narr2 = np.array(arr2, dtype=type)
             sarr1 = self.type_convertor(type)(array=narr1)
             sarr2 = self.type_convertor(type)(array=narr2)
-            nres = narr2 - narr1
-            sres = sarr2 - sarr1
+            nres = np.subtract(narr2, narr1)
+            sres = sarr2.subtract(sarr1)
             simdres = sarr2.sub_simd(sarr1)
+            sarr2.isubtract(sarr1)
             for i in range(len(arr1)):
                 self.assertEqual(sres[i], arr1[i])
+                self.assertEqual(sarr2[i], arr1[i])
                 self.assertEqual(simdres[i], arr1[i])
                 self.assertEqual(sres[i], nres[i])
 
@@ -1095,7 +1101,14 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
             r"SimpleArray<bool>::subtract\(\): "
             r"boolean value doesn't support this operation"
         ):
-            _ = sarr2 - sarr1
+            sarr2.subtract(sarr1)
+
+        with self.assertRaisesRegex(
+            RuntimeError,
+            r"SimpleArray<bool>::isubtract\(\): "
+            r"boolean value doesn't support this operation"
+        ):
+            sarr2.isubtract(sarr1)
 
     def test_mul(self):
         def test_mul_type(type):
@@ -1106,11 +1119,13 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
             narr2 = np.array(arr2, dtype=type)
             sarr1 = self.type_convertor(type)(array=narr1)
             sarr2 = self.type_convertor(type)(array=narr2)
-            nres = narr1 * narr2
-            sres = sarr1 * sarr2
+            nres = np.multiply(narr2, narr1)
+            sres = sarr1.multiply(sarr2)
             simdres = sarr1.mul_simd(sarr2)
+            sarr1.imultiply(sarr2)
             for i in range(len(res)):
                 self.assertEqual(sres[i], res[i])
+                self.assertEqual(sarr1[i], res[i])
                 self.assertEqual(simdres[i], res[i])
                 self.assertEqual(sres[i], nres[i])
 
@@ -1132,10 +1147,12 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         narr2 = np.array(arr2, dtype='bool')
         sarr1 = modmesh.SimpleArrayBool(array=narr1)
         sarr2 = modmesh.SimpleArrayBool(array=narr2)
-        nres = narr1 * narr2
-        sres = sarr1 * sarr2
+        nres = np.multiply(narr2, narr1)
+        sres = sarr1.multiply(sarr2)
+        sarr1.imultiply(sarr2)
         for i in range(len(res)):
             self.assertEqual(sres[i], res[i])
+            self.assertEqual(sarr1[i], res[i])
             self.assertEqual(sres[i], nres[i])
 
     def test_div(self):
@@ -1148,10 +1165,12 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
             narr2 = np.array(arr2, dtype=type)
             sarr1 = self.type_convertor(type)(array=narr1)
             sarr2 = self.type_convertor(type)(array=narr2)
-            nres = narr2 // narr1
-            sres = sarr2 // sarr1
+            nres = np.divide(narr2, narr1)
+            sres = sarr2.divide(sarr1)
+            sarr2.idivide(sarr1)
             for i in range(len(res)):
                 self.assertEqual(sres[i], res[i])
+                self.assertEqual(sarr2[i], res[i])
                 self.assertEqual(sres[i], nres[i])
 
         test_div_type('int8')
@@ -1169,10 +1188,12 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         narr2 = np.array(arr2, dtype='float64') / 2
         sarr1 = modmesh.SimpleArrayFloat64(array=narr1)
         sarr2 = modmesh.SimpleArrayFloat64(array=narr2)
-        nres = narr2 / narr1
-        sres = sarr2 / sarr1
+        nres = np.divide(narr2, narr1)
+        sres = sarr2.divide(sarr1)
+        sarr2.idivide(sarr1)
         for i in range(len(res)):
             self.assertEqual(sres[i], res[i])
+            self.assertEqual(sarr2[i], res[i])
             self.assertEqual(sres[i], nres[i])
 
         # test boolean
@@ -1183,8 +1204,19 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         narr2 = np.array(arr2, dtype='bool')
         sarr1 = modmesh.SimpleArrayBool(array=narr1)
         sarr2 = modmesh.SimpleArrayBool(array=narr2)
-        with self.assertRaises(TypeError):
-            _ = sarr1 / sarr2
+        with self.assertRaisesRegex(
+            RuntimeError,
+            r"SimpleArray<bool>::divide\(\): "
+            r"boolean value doesn't support this operation"
+        ):
+            sarr2.divide(sarr1)
+
+        with self.assertRaisesRegex(
+            RuntimeError,
+            r"SimpleArray<bool>::idivide\(\): "
+            r"boolean value doesn't support this operation"
+        ):
+            sarr2.idivide(sarr1)
 
 
 class SimpleArraySearchTC(unittest.TestCase):

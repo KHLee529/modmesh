@@ -51,12 +51,12 @@ def make_container(data):
 
 @profile_function
 def profile_add_np(src1, src2):
-    return src1 + src2
+    return np.add(src1, src2)
 
 
 @profile_function
 def profile_add_sa(src1, src2):
-    return src1 + src2
+    return src1.add(src2)
 
 
 @profile_function
@@ -66,12 +66,12 @@ def profile_add_simd(src1, src2):
 
 @profile_function
 def profile_sub_np(src1, src2):
-    return src1 - src2
+    return np.subtract(src1, src2)
 
 
 @profile_function
 def profile_sub_sa(src1, src2):
-    return src1 - src2
+    return src1.subtract(src2)
 
 
 @profile_function
@@ -81,12 +81,12 @@ def profile_sub_simd(src1, src2):
 
 @profile_function
 def profile_mul_np(src1, src2):
-    return src1 * src2
+    return np.multiply(src1, src2)
 
 
 @profile_function
 def profile_mul_sa(src1, src2):
-    return src1 - src2
+    return src1.multiply(src2)
 
 
 @profile_function

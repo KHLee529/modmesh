@@ -316,6 +316,16 @@ public:
         return *athis;
     }
 
+#define DECL_MM_IMPL_STATIC_ARITH_OP(FuncName, op) \
+    static A FuncName(A const & lhs, A const & rhs) { return lhs op rhs; }
+
+    DECL_MM_IMPL_STATIC_ARITH_OP(add, +)
+    DECL_MM_IMPL_STATIC_ARITH_OP(subtract, -)
+    DECL_MM_IMPL_STATIC_ARITH_OP(multiply, *)
+    DECL_MM_IMPL_STATIC_ARITH_OP(divide, /)
+
+#undef DECL_MM_IMPL_STATIC_ARITH_OP
+
 #define DECL_MM_DECL_SIMD_ARITHMETIC_OP(FuncName)                                 \
     A FuncName##_simd(A const & other)                                            \
     {                                                                             \

@@ -71,7 +71,7 @@ def profile_sub_np(src1, src2):
 
 @profile_function
 def profile_sub_sa(src1, src2):
-    return src1.subtract(src2)
+    return src1.sub(src2)
 
 
 @profile_function
@@ -86,7 +86,7 @@ def profile_mul_np(src1, src2):
 
 @profile_function
 def profile_mul_sa(src1, src2):
-    return src1.multiply(src2)
+    return src1.mul(src2)
 
 
 @profile_function

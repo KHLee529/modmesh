@@ -208,93 +208,196 @@ public:
         return ret;
     }
 
-#define DECL_MM_IMPL_ARITHMETIC_OPERATION(FUNCNAME, OP, ISBOOLSUPPORT, BOOLOP)                                                           \
-    static A FUNCNAME(A const & lhs, A const & rhs)                                                                                      \
-    {                                                                                                                                    \
-        A ret(lhs);                                                                                                                      \
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)                                                            \
-        {                                                                                                                                \
-            for (size_t i = 0; i < lhs.size(); ++i)                                                                                      \
-            {                                                                                                                            \
-                ret.data(i) = lhs.data(i) OP rhs.data(i);                                                                                \
-            }                                                                                                                            \
-        }                                                                                                                                \
-        else if constexpr (ISBOOLSUPPORT)                                                                                                \
-        {                                                                                                                                \
-            for (size_t i = 0; i < lhs.size(); ++i)                                                                                      \
-            {                                                                                                                            \
-                ret.data(i) = lhs.data(i) BOOLOP rhs.data(i);                                                                            \
-            }                                                                                                                            \
-        }                                                                                                                                \
-        else                                                                                                                             \
-        {                                                                                                                                \
-            throw std::runtime_error(Formatter() << "SimpleArray<bool>::" #FUNCNAME "(): boolean value doesn't support this operation"); \
-        }                                                                                                                                \
-        return ret;                                                                                                                      \
+    static A add(A const & lhs, A const & rhs)
+    {
+        A ret(lhs);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                ret.data(i) = lhs.data(i) + rhs.data(i);
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                ret.data(i) = lhs.data(i) || rhs.data(i);
+            }
+        }
+        return ret;
     }
 
-    DECL_MM_IMPL_ARITHMETIC_OPERATION(add, +, true, ||)
-    DECL_MM_IMPL_ARITHMETIC_OPERATION(subtract, -, false, -)
-    DECL_MM_IMPL_ARITHMETIC_OPERATION(multiply, *, true, &&)
-    DECL_MM_IMPL_ARITHMETIC_OPERATION(divide, /, false, /)
-
-#undef DECL_MM_IMPL_ARITHMETIC_OPERATION
-
-#define DECL_MM_IMPL_ARITH_ASSIGN_OPERATION(FUNCNAME, OP, ISBOOLSUPPORT, BOOLOP)                                                          \
-    static A & i##FUNCNAME(A & lhs, A const & rhs)                                                                                        \
-    {                                                                                                                                     \
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)                                                             \
-        {                                                                                                                                 \
-            for (size_t i = 0; i < lhs.size(); ++i)                                                                                       \
-            {                                                                                                                             \
-                lhs.data(i) OP rhs.data(i);                                                                                               \
-            }                                                                                                                             \
-        }                                                                                                                                 \
-        else if constexpr (ISBOOLSUPPORT)                                                                                                 \
-        {                                                                                                                                 \
-            for (size_t i = 0; i < lhs.size(); ++i)                                                                                       \
-            {                                                                                                                             \
-                lhs.data(i) = lhs.data(i) BOOLOP rhs.data(i);                                                                             \
-            }                                                                                                                             \
-        }                                                                                                                                 \
-        else                                                                                                                              \
-        {                                                                                                                                 \
-            throw std::runtime_error(Formatter() << "SimpleArray<bool>::i" #FUNCNAME "(): boolean value doesn't support this operation"); \
-        }                                                                                                                                 \
-        return lhs;                                                                                                                       \
+    static A sub(A const & lhs, A const & rhs)
+    {
+        A ret(lhs);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                ret.data(i) = lhs.data(i) - rhs.data(i);
+            }
+        }
+        else
+        {
+            throw std::runtime_error(Formatter() << "SimpleArray<bool>::sub(): boolean value doesn't support this operation");
+        }
+        return ret;
     }
 
-    DECL_MM_IMPL_ARITH_ASSIGN_OPERATION(add, +=, true, ||)
-    DECL_MM_IMPL_ARITH_ASSIGN_OPERATION(subtract, -=, false, -=)
-    DECL_MM_IMPL_ARITH_ASSIGN_OPERATION(multiply, *=, true, &&)
-    DECL_MM_IMPL_ARITH_ASSIGN_OPERATION(divide, /=, false, /=)
+    static A mul(A const & lhs, A const & rhs)
+    {
+        A ret(lhs);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                ret.data(i) = lhs.data(i) * rhs.data(i);
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                ret.data(i) = lhs.data(i) && rhs.data(i);
+            }
+        }
 
-#undef DECL_MM_IMPL_ARITH_ASSIGN_OPERATION
-
-#undef DECL_MM_IMPL_STATIC_ARITH_OP
-
-#define DECL_MM_DECL_SIMD_ARITHMETIC_OP(FUNCNAME, FULLFUNCNAME)                       \
-    A FUNCNAME##_simd(A const & other)                                                \
-    {                                                                                 \
-        auto athis = static_cast<A const *>(this);                                    \
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>> &&       \
-                      std::is_integral_v<std::remove_const_t<value_type>>)            \
-        {                                                                             \
-            A ret(*athis);                                                            \
-            simd::FUNCNAME<T>(ret.begin(), ret.end(), athis->begin(), other.begin()); \
-            return ret;                                                               \
-        }                                                                             \
-        else                                                                          \
-        {                                                                             \
-            return FULLFUNCNAME(*athis, other);                                       \
-        }                                                                             \
+        return ret;
     }
 
-    DECL_MM_DECL_SIMD_ARITHMETIC_OP(add, add)
-    DECL_MM_DECL_SIMD_ARITHMETIC_OP(sub, subtract)
-    DECL_MM_DECL_SIMD_ARITHMETIC_OP(mul, multiply)
+    static A div(A const & lhs, A const & rhs)
+    {
+        A ret(lhs);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                ret.data(i) = lhs.data(i) / rhs.data(i);
+            }
+        }
+        else
+        {
+            throw std::runtime_error(Formatter() << "SimpleArray<bool>::div(): boolean value doesn't support this operation");
+        }
+        return ret;
+    }
 
-#undef DECL_MM_DECL_SIMD_ARITHMETIC_OP
+    static A & iadd(A & lhs, A const & rhs)
+    {
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                lhs.data(i) += rhs.data(i);
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                lhs.data(i) = lhs.data(i) || rhs.data(i);
+            }
+        }
+
+        return lhs;
+    }
+
+    static A & isub(A & lhs, A const & rhs)
+    {
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                lhs.data(i) -= rhs.data(i);
+            }
+        }
+        else
+        {
+            throw std::runtime_error(Formatter() << "SimpleArray<bool>::isub(): boolean value doesn't support this operation");
+        }
+        return lhs;
+    }
+
+    static A & imul(A & lhs, A const & rhs)
+    {
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                lhs.data(i) *= rhs.data(i);
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                lhs.data(i) = lhs.data(i) && rhs.data(i);
+            }
+        }
+        return lhs;
+    }
+
+    static A & idiv(A & lhs, A const & rhs)
+    {
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            for (size_t i = 0; i < lhs.size(); ++i)
+            {
+                lhs.data(i) /= rhs.data(i);
+            }
+        }
+        else
+        {
+            throw std::runtime_error(Formatter() << "SimpleArray<bool>::idiv(): boolean value doesn't support this operation");
+        }
+        return lhs;
+    }
+
+    A add_simd(A const & other)
+    {
+        auto athis = static_cast<A const *>(this);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>> && std::is_integral_v<std::remove_const_t<value_type>>)
+        {
+            A ret(*athis);
+            simd::add<T>(ret.begin(), ret.end(), athis->begin(), other.begin());
+            return ret;
+        }
+        else
+        {
+            return add(*athis, other);
+        }
+    }
+
+    A sub_simd(A const & other)
+    {
+        auto athis = static_cast<A const *>(this);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>> && std::is_integral_v<std::remove_const_t<value_type>>)
+        {
+            A ret(*athis);
+            simd::sub<T>(ret.begin(), ret.end(), athis->begin(), other.begin());
+            return ret;
+        }
+        else
+        {
+            return sub(*athis, other);
+        }
+    }
+
+    A mul_simd(A const & other)
+    {
+        auto athis = static_cast<A const *>(this);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>> && std::is_integral_v<std::remove_const_t<value_type>>)
+        {
+            A ret(*athis);
+            simd::mul<T>(ret.begin(), ret.end(), athis->begin(), other.begin());
+            return ret;
+        }
+        else
+        {
+            return mul(*athis, other);
+        }
+    }
 
 }; /* end class SimpleArrayMixinCalculators */
 

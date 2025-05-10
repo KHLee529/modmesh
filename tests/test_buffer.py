@@ -1167,10 +1167,12 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
             sarr2 = self.type_convertor(type)(array=narr2)
             nres = np.divide(narr2, narr1)
             sres = sarr2.div(sarr1)
+            simdres = sarr2.div_simd(sarr1)
             sarr2.idiv(sarr1)
             for i in range(len(res)):
                 self.assertEqual(sres[i], res[i])
                 self.assertEqual(sarr2[i], res[i])
+                self.assertEqual(simdres[i], res[i])
                 self.assertEqual(sres[i], nres[i])
 
         test_div_type('int8')
@@ -1190,10 +1192,12 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         sarr2 = modmesh.SimpleArrayFloat64(array=narr2)
         nres = np.divide(narr2, narr1)
         sres = sarr2.div(sarr1)
+        simdres = sarr2.div_simd(sarr1)
         sarr2.idiv(sarr1)
         for i in range(len(res)):
             self.assertEqual(sres[i], res[i])
             self.assertEqual(sarr2[i], res[i])
+            self.assertEqual(simdres[i], res[i])
             self.assertEqual(sres[i], nres[i])
 
         # test boolean

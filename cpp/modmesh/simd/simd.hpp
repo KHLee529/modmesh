@@ -74,6 +74,7 @@ const T * check_between(T const * start, T const * end, T const & min_val, T con
 DECL_MM_ARITHMETIC_OP(add)
 DECL_MM_ARITHMETIC_OP(sub)
 DECL_MM_ARITHMETIC_OP(mul)
+DECL_MM_ARITHMETIC_OP(div)
 
 #undef DECL_MM_ARITHMETIC_OP
 } /* namespace simd */

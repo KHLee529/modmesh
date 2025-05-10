@@ -357,7 +357,7 @@ public:
     A add_simd(A const & other)
     {
         auto athis = static_cast<A const *>(this);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>> && std::is_integral_v<std::remove_const_t<value_type>>)
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
         {
             A ret(*athis);
             simd::add<T>(ret.begin(), ret.end(), athis->begin(), other.begin());
@@ -372,7 +372,7 @@ public:
     A sub_simd(A const & other)
     {
         auto athis = static_cast<A const *>(this);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>> && std::is_integral_v<std::remove_const_t<value_type>>)
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
         {
             A ret(*athis);
             simd::sub<T>(ret.begin(), ret.end(), athis->begin(), other.begin());
@@ -387,7 +387,7 @@ public:
     A mul_simd(A const & other)
     {
         auto athis = static_cast<A const *>(this);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>> && std::is_integral_v<std::remove_const_t<value_type>>)
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
         {
             A ret(*athis);
             simd::mul<T>(ret.begin(), ret.end(), athis->begin(), other.begin());
@@ -396,6 +396,21 @@ public:
         else
         {
             return mul(*athis, other);
+        }
+    }
+
+    A div_simd(A const & other)
+    {
+        auto athis = static_cast<A const *>(this);
+        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
+        {
+            A ret(*athis);
+            simd::div<T>(ret.begin(), ret.end(), athis->begin(), other.begin());
+            return ret;
+        }
+        else
+        {
+            return div(*athis, other);
         }
     }
 

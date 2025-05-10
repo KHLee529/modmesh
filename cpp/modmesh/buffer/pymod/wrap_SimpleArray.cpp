@@ -226,6 +226,7 @@ class MODMESH_PYTHON_WRAPPER_VISIBILITY WrapSimpleArray
             .def("add_simd", &wrapped_type::add_simd)
             .def("sub_simd", &wrapped_type::sub_simd)
             .def("mul_simd", &wrapped_type::mul_simd)
+            .def("div_simd", &wrapped_type::div_simd)
             //
             ;
 

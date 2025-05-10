@@ -142,6 +142,7 @@ OUT_OF_RANGE:
 DECL_MM_IMPL_NEON_ARITHMETIC_OP(add, type::has_vectype<T>)
 DECL_MM_IMPL_NEON_ARITHMETIC_OP(sub, type::has_vectype<T>)
 DECL_MM_IMPL_NEON_ARITHMETIC_OP(mul, (type::vector_lane<T> > 2))
+DECL_MM_IMPL_NEON_ARITHMETIC_OP(div, std::is_floating_point_v<T>)
 
 #undef DECL_MM_IMPL_NEON_ARITHMETIC_OP
 

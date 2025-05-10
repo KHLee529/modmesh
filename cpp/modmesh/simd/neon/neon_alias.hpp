@@ -98,8 +98,11 @@ type::vector_t<base_type> vaddq(type::vector_t<base_type> vec_a, type::vector_t<
 template <typename base_type, typename = std::enable_if_t<type::has_vectype<base_type>>>
 type::vector_t<base_type> vsubq(type::vector_t<base_type> vec_a, type::vector_t<base_type> vec_b);
 
-template <typename base_type, typename = std::enable_if_t<2 < type::vector_lane<base_type>>>
+template <typename base_type, typename = std::enable_if_t<2 < type::vector_lane<base_type> || std::is_floating_point_v<base_type>>>
 type::vector_t<base_type> vmulq(type::vector_t<base_type> vec_a, type::vector_t<base_type> vec_b);
+
+template <typename base_type, typename = std::enable_if_t<std::is_floating_point_v<base_type>>>
+type::vector_t<base_type> vdivq(type::vector_t<base_type> vec_a, type::vector_t<base_type> vec_b);
 
 } /* namespace neon */
 

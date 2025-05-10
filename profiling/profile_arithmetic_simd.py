@@ -47,6 +47,10 @@ def make_container(data):
         return modmesh.SimpleArrayUint32(array=data)
     elif np.isdtype(data.dtype, np.uint64):
         return modmesh.SimpleArrayUint64(array=data)
+    elif np.isdtype(data.dtype, np.float32):
+        return modmesh.SimpleArrayFloat32(array=data)
+    elif np.isdtype(data.dtype, np.float64):
+        return modmesh.SimpleArrayFloat64(array=data)
 
 
 @profile_function
@@ -94,6 +98,21 @@ def profile_mul_simd(src1, src2):
     return src1.mul_simd(src2)
 
 
+@profile_function
+def profile_div_np(src1, src2):
+    return np.divide(src1, src2)
+
+
+@profile_function
+def profile_div_sa(src1, src2):
+    return src1.div(src2)
+
+
+@profile_function
+def profile_div_simd(src1, src2):
+    return src1.div_simd(src2)
+
+
 def prof_add(src1, src2):
     src1_sa = make_container(src1)
     src2_sa = make_container(src2)
@@ -118,6 +137,14 @@ def prof_mul(src1, src2):
     profile_mul_simd(src1_sa, src2_sa)
 
 
+def prof_div(src1, src2):
+    src1_sa = make_container(src1)
+    src2_sa = make_container(src2)
+    profile_div_np(src1, src2)
+    profile_div_sa(src1_sa, src2_sa)
+    profile_div_simd(src1_sa, src2_sa)
+
+
 def profile_arithmetic_operation(max_pow, prof_func, title, it=10):
     N = 2 ** 22
     dtype = ["uint8", "uint16", "uint32", "uint32",
@@ -126,14 +153,19 @@ def profile_arithmetic_operation(max_pow, prof_func, title, it=10):
 
     modmesh.call_profiler.reset()
     for _ in range(it):
-        src1 = np.random.randint(0, max_val, N,  dtype=dtype)
-        src2 = np.random.randint(0, max_val, N,  dtype=dtype)
+        src1 = np.random.randint(1, max_val, N,  dtype=dtype)
+        src2 = np.random.randint(1, max_val, N,  dtype=dtype)
+
+        if title == "div":
+            src1 = src1.astype("float32")
+            src2 = src2.astype("float32")
 
         prof_func(src1, src2)
 
     res = modmesh.call_profiler.result()["children"]
 
-    print(f"## {title} N = 4M max: 2^{max_pow} type: {dtype}\n")
+    print(f"## {title} N = 4M max: 2^{max_pow} "
+          f"type: {dtype if title != 'div' else 'float32'}\n")
     out = {}
     for r in res:
         name = r["name"].replace(f"profile_{title}_", "")
@@ -162,6 +194,7 @@ def main():
         profile_arithmetic_operation(pow, prof_add, "add")
         profile_arithmetic_operation(pow, prof_sub, "sub")
         profile_arithmetic_operation(pow, prof_mul, "mul")
+        profile_arithmetic_operation(pow, prof_div, "div")
         pow = pow + 8
 
 

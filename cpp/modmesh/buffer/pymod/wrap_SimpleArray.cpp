@@ -207,22 +207,23 @@ class MODMESH_PYTHON_WRAPPER_VISIBILITY WrapSimpleArray
     {
         namespace py = pybind11; // NOLINT(misc-unused-alias-decls)
 
-#define def_arithmetic(FUNCNAME) \
-    def(#FUNCNAME, [](wrapped_type & self, wrapped_type const & other) { return wrapped_type::FUNCNAME(self, other); })
-
         (*this)
             .def("min", &wrapped_type::min)
             .def("max", &wrapped_type::max)
             .def("sum", &wrapped_type::sum)
             .def("abs", &wrapped_type::abs)
-            .def_arithmetic(add)
-            .def_arithmetic(sub)
-            .def_arithmetic(mul)
-            .def_arithmetic(div)
-            .def_arithmetic(iadd)
-            .def_arithmetic(isub)
-            .def_arithmetic(imul)
-            .def_arithmetic(idiv)
+            .def("add", &wrapped_type::add)
+            .def("sub", &wrapped_type::sub)
+            .def("mul", &wrapped_type::mul)
+            .def("div", &wrapped_type::div)
+            .def("iadd", [](wrapped_type & self, wrapped_type const & other)
+                 { self.iadd(other); })
+            .def("isub", [](wrapped_type & self, wrapped_type const & other)
+                 { self.isub(other); })
+            .def("imul", [](wrapped_type & self, wrapped_type const & other)
+                 { self.imul(other); })
+            .def("idiv", [](wrapped_type & self, wrapped_type const & other)
+                 { self.idiv(other); })
             .def("add_simd", &wrapped_type::add_simd)
             .def("sub_simd", &wrapped_type::sub_simd)
             .def("mul_simd", &wrapped_type::mul_simd)
@@ -231,7 +232,6 @@ class MODMESH_PYTHON_WRAPPER_VISIBILITY WrapSimpleArray
             ;
 
         return *this;
-#undef def_arithmetic
     }
 
     wrapper_type & wrap_sort()

@@ -208,150 +208,99 @@ public:
         return ret;
     }
 
-    static A add(A const & lhs, A const & rhs)
+    A add(A const & other) const
     {
-        A ret(lhs);
+        return A(*static_cast<A const *>(this)).iadd(other);
+    }
+
+    A sub(A const & other) const
+    {
+        return A(*static_cast<A const *>(this)).isub(other);
+    }
+
+    A mul(A const & other) const
+    {
+        return A(*static_cast<A const *>(this)).imul(other);
+    }
+
+    A div(A const & other) const
+    {
+        return A(*static_cast<A const *>(this)).idiv(other);
+    }
+
+    A & iadd(A const & other)
+    {
+        auto athis = static_cast<A *>(this);
         if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
         {
-            for (size_t i = 0; i < lhs.size(); ++i)
+            for (size_t i = 0; i < athis->size(); ++i)
             {
-                ret.data(i) = lhs.data(i) + rhs.data(i);
+                athis->data(i) += other.data(i);
             }
         }
         else
         {
-            for (size_t i = 0; i < lhs.size(); ++i)
+            for (size_t i = 0; i < athis->size(); ++i)
             {
-                ret.data(i) = lhs.data(i) || rhs.data(i);
+                athis->data(i) = athis->data(i) || other.data(i);
             }
         }
-        return ret;
+
+        return *athis;
     }
 
-    static A sub(A const & lhs, A const & rhs)
+    A & isub(A const & other)
     {
-        A ret(lhs);
+        auto athis = static_cast<A *>(this);
         if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
         {
-            for (size_t i = 0; i < lhs.size(); ++i)
+            for (size_t i = 0; i < athis->size(); ++i)
             {
-                ret.data(i) = lhs.data(i) - rhs.data(i);
-            }
-        }
-        else
-        {
-            throw std::runtime_error(Formatter() << "SimpleArray<bool>::sub(): boolean value doesn't support this operation");
-        }
-        return ret;
-    }
-
-    static A mul(A const & lhs, A const & rhs)
-    {
-        A ret(lhs);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < lhs.size(); ++i)
-            {
-                ret.data(i) = lhs.data(i) * rhs.data(i);
-            }
-        }
-        else
-        {
-            for (size_t i = 0; i < lhs.size(); ++i)
-            {
-                ret.data(i) = lhs.data(i) && rhs.data(i);
-            }
-        }
-
-        return ret;
-    }
-
-    static A div(A const & lhs, A const & rhs)
-    {
-        A ret(lhs);
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < lhs.size(); ++i)
-            {
-                ret.data(i) = lhs.data(i) / rhs.data(i);
-            }
-        }
-        else
-        {
-            throw std::runtime_error(Formatter() << "SimpleArray<bool>::div(): boolean value doesn't support this operation");
-        }
-        return ret;
-    }
-
-    static A & iadd(A & lhs, A const & rhs)
-    {
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < lhs.size(); ++i)
-            {
-                lhs.data(i) += rhs.data(i);
-            }
-        }
-        else
-        {
-            for (size_t i = 0; i < lhs.size(); ++i)
-            {
-                lhs.data(i) = lhs.data(i) || rhs.data(i);
-            }
-        }
-
-        return lhs;
-    }
-
-    static A & isub(A & lhs, A const & rhs)
-    {
-        if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
-        {
-            for (size_t i = 0; i < lhs.size(); ++i)
-            {
-                lhs.data(i) -= rhs.data(i);
+                athis->data(i) -= other.data(i);
             }
         }
         else
         {
             throw std::runtime_error(Formatter() << "SimpleArray<bool>::isub(): boolean value doesn't support this operation");
         }
-        return lhs;
+        return *athis;
     }
 
-    static A & imul(A & lhs, A const & rhs)
+    A & imul(A const & other)
     {
+        auto athis = static_cast<A *>(this);
         if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
         {
-            for (size_t i = 0; i < lhs.size(); ++i)
+            for (size_t i = 0; i < athis->size(); ++i)
             {
-                lhs.data(i) *= rhs.data(i);
+                athis->data(i) *= other.data(i);
             }
         }
         else
         {
-            for (size_t i = 0; i < lhs.size(); ++i)
+            for (size_t i = 0; i < athis->size(); ++i)
             {
-                lhs.data(i) = lhs.data(i) && rhs.data(i);
+                athis->data(i) = athis->data(i) && other.data(i);
             }
         }
-        return lhs;
+        return *athis;
     }
 
-    static A & idiv(A & lhs, A const & rhs)
+    A & idiv(A const & other)
     {
+        auto athis = static_cast<A *>(this);
         if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
         {
-            for (size_t i = 0; i < lhs.size(); ++i)
+            for (size_t i = 0; i < athis->size(); ++i)
             {
-                lhs.data(i) /= rhs.data(i);
+                athis->data(i) /= other.data(i);
             }
         }
         else
         {
             throw std::runtime_error(Formatter() << "SimpleArray<bool>::idiv(): boolean value doesn't support this operation");
         }
-        return lhs;
+        return *athis;
     }
 
     A add_simd(A const & other)
@@ -365,7 +314,7 @@ public:
         }
         else
         {
-            return add(*athis, other);
+            return athis->add(other);
         }
     }
 
@@ -380,7 +329,7 @@ public:
         }
         else
         {
-            return sub(*athis, other);
+            return athis->sub(other);
         }
     }
 
@@ -395,7 +344,7 @@ public:
         }
         else
         {
-            return mul(*athis, other);
+            return athis->mul(other);
         }
     }
 
@@ -410,7 +359,7 @@ public:
         }
         else
         {
-            return div(*athis, other);
+            return athis->div(other);
         }
     }
 

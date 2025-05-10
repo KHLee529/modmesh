@@ -1098,7 +1098,7 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         sarr2 = modmesh.SimpleArrayBool(array=narr2)
         with self.assertRaisesRegex(
             RuntimeError,
-            r"SimpleArray<bool>::sub\(\): "
+            r"SimpleArray<bool>::isub\(\): "
             r"boolean value doesn't support this operation"
         ):
             sarr2.sub(sarr1)
@@ -1210,7 +1210,7 @@ class SimpleArrayCalculatorsTC(unittest.TestCase):
         sarr2 = modmesh.SimpleArrayBool(array=narr2)
         with self.assertRaisesRegex(
             RuntimeError,
-            r"SimpleArray<bool>::div\(\): "
+            r"SimpleArray<bool>::idiv\(\): "
             r"boolean value doesn't support this operation"
         ):
             sarr2.div(sarr1)

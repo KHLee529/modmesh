@@ -55,28 +55,66 @@ const T * check_between(T const * start, T const * end, T const & min_val, T con
     }
 }
 
-#define DECL_MM_ARITHMETIC_OP(FUNCNAME)                                         \
-    template <typename T>                                                       \
-    void FUNCNAME(T * dest, T const * dest_end, T const * src1, T const * src2) \
-    {                                                                           \
-        using namespace detail;                                                 \
-        switch (detect_simd())                                                  \
-        {                                                                       \
-        case SIMD_NEON:                                                         \
-            return neon::FUNCNAME<T>(dest, dest_end, src1, src2);               \
-            break;                                                              \
-                                                                                \
-        default:                                                                \
-            return generic::FUNCNAME<T>(dest, dest_end, src1, src2);            \
-        }                                                                       \
+template <typename T>
+void add(T * dest, T const * dest_end, T const * src1, T const * src2)
+{
+    using namespace detail;
+    switch (detect_simd())
+    {
+    case SIMD_NEON:
+        return neon::add<T>(dest, dest_end, src1, src2);
+        break;
+
+    default:
+        return generic::add<T>(dest, dest_end, src1, src2);
     }
+}
 
-DECL_MM_ARITHMETIC_OP(add)
-DECL_MM_ARITHMETIC_OP(sub)
-DECL_MM_ARITHMETIC_OP(mul)
-DECL_MM_ARITHMETIC_OP(div)
+template <typename T>
+void sub(T * dest, T const * dest_end, T const * src1, T const * src2)
+{
+    using namespace detail;
+    switch (detect_simd())
+    {
+    case SIMD_NEON:
+        return neon::sub<T>(dest, dest_end, src1, src2);
+        break;
 
-#undef DECL_MM_ARITHMETIC_OP
+    default:
+        return generic::sub<T>(dest, dest_end, src1, src2);
+    }
+}
+
+template <typename T>
+void mul(T * dest, T const * dest_end, T const * src1, T const * src2)
+{
+    using namespace detail;
+    switch (detect_simd())
+    {
+    case SIMD_NEON:
+        return neon::mul<T>(dest, dest_end, src1, src2);
+        break;
+
+    default:
+        return generic::mul<T>(dest, dest_end, src1, src2);
+    }
+}
+
+template <typename T>
+void div(T * dest, T const * dest_end, T const * src1, T const * src2)
+{
+    using namespace detail;
+    switch (detect_simd())
+    {
+    case SIMD_NEON:
+        return neon::div<T>(dest, dest_end, src1, src2);
+        break;
+
+    default:
+        return generic::div<T>(dest, dest_end, src1, src2);
+    }
+}
+
 } /* namespace simd */
 
 } /* namespace modmesh */

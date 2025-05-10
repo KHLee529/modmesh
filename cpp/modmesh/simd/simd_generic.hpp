@@ -53,26 +53,57 @@ const T * check_between(T const * start, T const * end, T const & min_val, T con
     return nullptr;
 }
 
-#define DECL_MM_GENERIC_ARITHMETIC_OP(FUNCNAME, OP)                             \
-    template <typename T>                                                       \
-    void FUNCNAME(T * dest, T const * dest_end, T const * src1, T const * src2) \
-    {                                                                           \
-        T * ptr = dest;                                                         \
-        while (ptr < dest_end)                                                  \
-        {                                                                       \
-            *ptr = *src1 OP * src2;                                             \
-            ++ptr;                                                              \
-            ++src1;                                                             \
-            ++src2;                                                             \
-        }                                                                       \
+template <typename T>
+void add(T * dest, T const * dest_end, T const * src1, T const * src2)
+{
+    T * ptr = dest;
+    while (ptr < dest_end)
+    {
+        *ptr = *src1 + *src2;
+        ++ptr;
+        ++src1;
+        ++src2;
     }
+}
 
-DECL_MM_GENERIC_ARITHMETIC_OP(add, +)
-DECL_MM_GENERIC_ARITHMETIC_OP(sub, -)
-DECL_MM_GENERIC_ARITHMETIC_OP(mul, *)
-DECL_MM_GENERIC_ARITHMETIC_OP(div, /)
+template <typename T>
+void sub(T * dest, T const * dest_end, T const * src1, T const * src2)
+{
+    T * ptr = dest;
+    while (ptr < dest_end)
+    {
+        *ptr = *src1 - *src2;
+        ++ptr;
+        ++src1;
+        ++src2;
+    }
+}
 
-#undef DECL_MM_GENERIC_ARITHMETIC_OP
+template <typename T>
+void mul(T * dest, T const * dest_end, T const * src1, T const * src2)
+{
+    T * ptr = dest;
+    while (ptr < dest_end)
+    {
+        *ptr = *src1 * *src2;
+        ++ptr;
+        ++src1;
+        ++src2;
+    }
+}
+
+template <typename T>
+void div(T * dest, T const * dest_end, T const * src1, T const * src2)
+{
+    T * ptr = dest;
+    while (ptr < dest_end)
+    {
+        *ptr = *src1 / *src2;
+        ++ptr;
+        ++src1;
+        ++src2;
+    }
+}
 
 } /* namespace generic */
 

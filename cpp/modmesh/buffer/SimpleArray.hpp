@@ -303,63 +303,79 @@ public:
         return *athis;
     }
 
-    A add_simd(A const & other)
+    A add_simd(A const & other) const
     {
-        auto athis = static_cast<A const *>(this);
+        return A(*static_cast<A const *>(this)).iadd_simd(other);
+    }
+
+    A sub_simd(A const & other) const
+    {
+        return A(*static_cast<A const *>(this)).isub_simd(other);
+    }
+
+    A mul_simd(A const & other) const
+    {
+        return A(*static_cast<A const *>(this)).imul_simd(other);
+    }
+
+    A div_simd(A const & other) const
+    {
+        return A(*static_cast<A const *>(this)).idiv_simd(other);
+    }
+
+    A & iadd_simd(A const & other)
+    {
+        auto athis = static_cast<A *>(this);
         if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
         {
-            A ret(*athis);
-            simd::add<T>(ret.begin(), ret.end(), athis->begin(), other.begin());
-            return ret;
+            simd::add<T>(athis->begin(), athis->end(), athis->begin(), other.begin());
+            return *athis;
         }
         else
         {
-            return athis->add(other);
+            return athis->iadd(other);
         }
     }
 
-    A sub_simd(A const & other)
+    A & isub_simd(A const & other)
     {
-        auto athis = static_cast<A const *>(this);
+        auto athis = static_cast<A *>(this);
         if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
         {
-            A ret(*athis);
-            simd::sub<T>(ret.begin(), ret.end(), athis->begin(), other.begin());
-            return ret;
+            simd::sub<T>(athis->begin(), athis->end(), athis->begin(), other.begin());
+            return *athis;
         }
         else
         {
-            return athis->sub(other);
+            return athis->isub(other);
         }
     }
 
-    A mul_simd(A const & other)
+    A & imul_simd(A const & other)
     {
-        auto athis = static_cast<A const *>(this);
+        auto athis = static_cast<A *>(this);
         if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
         {
-            A ret(*athis);
-            simd::mul<T>(ret.begin(), ret.end(), athis->begin(), other.begin());
-            return ret;
+            simd::mul<T>(athis->begin(), athis->end(), athis->begin(), other.begin());
+            return *athis;
         }
         else
         {
-            return athis->mul(other);
+            return athis->imul(other);
         }
     }
 
-    A div_simd(A const & other)
+    A & idiv_simd(A const & other)
     {
-        auto athis = static_cast<A const *>(this);
+        auto athis = static_cast<A *>(this);
         if constexpr (!std::is_same_v<bool, std::remove_const_t<value_type>>)
         {
-            A ret(*athis);
-            simd::div<T>(ret.begin(), ret.end(), athis->begin(), other.begin());
-            return ret;
+            simd::div<T>(athis->begin(), athis->end(), athis->begin(), other.begin());
+            return *athis;
         }
         else
         {
-            return athis->div(other);
+            return athis->idiv(other);
         }
     }
 

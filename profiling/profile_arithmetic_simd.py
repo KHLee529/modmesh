@@ -47,6 +47,14 @@ def make_container(data):
         return modmesh.SimpleArrayUint32(array=data)
     elif np.isdtype(data.dtype, np.uint64):
         return modmesh.SimpleArrayUint64(array=data)
+    if np.isdtype(data.dtype, np.int8):
+        return modmesh.SimpleArrayInt8(array=data)
+    elif np.isdtype(data.dtype, np.int16):
+        return modmesh.SimpleArrayInt16(array=data)
+    elif np.isdtype(data.dtype, np.int32):
+        return modmesh.SimpleArrayInt32(array=data)
+    elif np.isdtype(data.dtype, np.int64):
+        return modmesh.SimpleArrayInt64(array=data)
     elif np.isdtype(data.dtype, np.float32):
         return modmesh.SimpleArrayFloat32(array=data)
     elif np.isdtype(data.dtype, np.float64):
@@ -145,30 +153,31 @@ def prof_div(src1, src2):
     profile_div_simd(src1_sa, src2_sa)
 
 
-def profile_arithmetic_operation(max_pow, prof_func, title, it=10):
+def make_data(dtype, min_val, max_val, N=2 ** 22):
+    if "float" in dtype:
+        ret = np.random.rand(N).astype(dtype, copy=False)
+        ret = ret * (max_val - min_val) + min_val
+        return ret
+    else:
+        return np.random.randint(min_val, max_val, N, dtype=dtype)
+
+
+def profile_arithmetic_operation(op, val_range, prof_func, dtype, it=10):
     N = 2 ** 22
-    dtype = ["uint8", "uint16", "uint32", "uint32",
-             "uint64", "uint64", "uint64", "uint64"][max_pow // 8]
-    max_val = 2 ** max_pow
 
     modmesh.call_profiler.reset()
     for _ in range(it):
-        src1 = np.random.randint(1, max_val, N,  dtype=dtype)
-        src2 = np.random.randint(1, max_val, N,  dtype=dtype)
-
-        if title == "div":
-            src1 = src1.astype("float32")
-            src2 = src2.astype("float32")
-
+        src1 = make_data(dtype, val_range[0], val_range[1], N)
+        src2 = make_data(dtype, val_range[0], val_range[1], N)
         prof_func(src1, src2)
 
     res = modmesh.call_profiler.result()["children"]
 
-    print(f"## {title} N = 4M max: 2^{max_pow} "
-          f"type: {dtype if title != 'div' else 'float32'}\n")
+    print(f"## {op} N = 4M range: $[{val_range[0]}, {val_range[1]}]$ "
+          f"type: `{dtype}`\n")
     out = {}
     for r in res:
-        name = r["name"].replace(f"profile_{title}_", "")
+        name = r["name"].replace(f"profile_{op}_", "")
         time = r["total_time"] / r["count"]
         out[name] = time
 
@@ -186,16 +195,40 @@ def profile_arithmetic_operation(max_pow, prof_func, title, it=10):
     print()
 
 
-def main():
-    pow = 6
-    it = 6
+def profile_operation(op):
+    dtypes_range = {
+        "uint8": (0, 2 ** 8 - 1),
+        "uint16": (0, 2 ** 16 - 1),
+        "uint32": (0, 2 ** 32 - 1),
+        "uint64": (0, 2 ** 64 - 1),
+        "int8": (-(2 ** 7), 2 ** 7 - 1),
+        "int16": (-(2 ** 15), 2 ** 15 - 1),
+        "int32": (-(2 ** 31), 2 ** 31 - 1),
+        "int64": (-(2 ** 63), 2 ** 63 - 1),
+        "float32": (-(2.0 ** 32), 2.0 ** 32),
+        "float64": (-(2.0 ** 64), 2.0 ** 64),
+    }
 
-    for _ in range(it):
-        profile_arithmetic_operation(pow, prof_add, "add")
-        profile_arithmetic_operation(pow, prof_sub, "sub")
-        profile_arithmetic_operation(pow, prof_mul, "mul")
-        profile_arithmetic_operation(pow, prof_div, "div")
-        pow = pow + 8
+    op_to_func = {
+        "add": prof_add,
+        "sub": prof_sub,
+        "mul": prof_mul,
+        "div": prof_div,
+    }
+
+    div_test_dtypes = ["float32", "float64"]
+    types_to_test = dtypes_range.keys() if op != "div" else div_test_dtypes
+
+    for dtype in types_to_test:
+        profile_arithmetic_operation(op,
+                                     dtypes_range[dtype],
+                                     op_to_func[op],
+                                     dtype)
+
+
+def main():
+    for operation in ["add", "sub", "mul", "div"]:
+        profile_operation(operation)
 
 
 if __name__ == "__main__":
